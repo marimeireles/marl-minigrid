@@ -218,7 +218,7 @@ class MultiGrid:
         raise NotImplementedError
         width, height, channels = array.shape
         assert channels == 3
-        vis_mask[i, j] = np.ones(shape=(width, height), dtype=np.bool)
+        vis_mask[i, j] = np.ones(shape=(width, height), dtype=np.bool_)
         grid = cls((width, height))
 
     
@@ -421,7 +421,7 @@ class MultiGridEnv(gym.Env):
             # below, not sure orientation is correct but as of 6/27/2020 that doesn't matter because
             # agent views are usually square and this grid won't be used for anything.
             grid = MultiGrid((agent.view_size, agent.view_size), orientation=agent.dir+1)
-            vis_mask = np.zeros((agent.view_size, agent.view_size), dtype=np.bool)
+            vis_mask = np.zeros((agent.view_size, agent.view_size), dtype=np.bool_)
             return grid, vis_mask
 
         topX, topY, botX, botY = agent.get_view_exts()
@@ -464,7 +464,7 @@ class MultiGridEnv(gym.Env):
                 ret['reward'] = getattr(agent, 'step_reward', 0)
             if agent.observe_position:
                 agent_pos = agent.pos if agent.pos is not None else (0,0)
-                ret['position'] = np.array(agent_pos)/np.array([self.width, self.height], dtype=np.float)
+                ret['position'] = np.array(agent_pos)/np.array([self.width, self.height], dtype=np.cfloat)
             if agent.observe_orientation:
                 agent_dir = agent.dir if agent.dir is not None else 0
                 ret['orientation'] = agent_dir
@@ -507,7 +507,7 @@ class MultiGridEnv(gym.Env):
                 
         assert len(actions) == len(self.agents)
 
-        step_rewards = np.zeros((len(self.agents,)), dtype=np.float)
+        step_rewards = np.zeros((len(self.agents,)), dtype=np.cfloat)
 
         self.step_count += 1
 
@@ -687,25 +687,30 @@ class MultiGridEnv(gym.Env):
         obj.set_position(pos)
         return True
 
-    def place_obj(self, obj, top=(0,0), size=None, reject_fn=None, max_tries=1e5):
-        max_tries = int(max(1, min(max_tries, 1e5)))
-        top = (max(top[0], 0), max(top[1], 0))
+    def place_obj(self, obj, top=(0,0), size=None, reject_fn=None, max_tries=1000):
+        """
+        Try to place an object at a certain position in the grid.
+        If it is possible, then do so and return True.
+        Otherwise do nothing and return False.
+        """
         if size is None:
             size = (self.grid.width, self.grid.height)
+
+        # Calculate the bottom right corner of the area where we can place the object
         bottom = (min(top[0] + size[0], self.grid.width), min(top[1] + size[1], self.grid.height))
 
-        # agent_positions = [tuple(agent.pos) if agent.pos is not None else None for agent in self.agents]
-        for try_no in range(max_tries):
-            pos = self.np_random.randint(top, bottom)
-            if (reject_fn is not None) and reject_fn(pos):
-                continue
-            else:
-                if self.try_place_obj(obj, pos):
-                    break
-        else:
-            raise RecursionError("Rejection sampling failed in place_obj.")
+        available_positions = [(x, y) for x in range(top[0], bottom[0])
+                                        for y in range(top[1], bottom[1])
+                                        if reject_fn is None or not reject_fn((x, y))]
 
-        return pos
+        self.np_random.shuffle(available_positions)  # Shuffle to randomize the choice order
+
+        for pos in available_positions:
+            if self.try_place_obj(obj, pos):
+                return pos
+
+        raise RecursionError("Rejection sampling failed in place_obj.")
+
 
     def place_agents(self, top=None, size=None, rand_dir=True, max_tries=1000):
         # warnings.warn("Placing agents with the function place_agents is deprecated.")
@@ -738,7 +743,7 @@ class MultiGridEnv(gym.Env):
             self.window = SimpleImageViewer(caption="Marlgrid")
 
         # Compute which cells are visible to the agent
-        highlight_mask = np.full((self.width, self.height), False, dtype=np.bool)
+        highlight_mask = np.full((self.width, self.height), False, dtype=np.bool_)
         for agent in self.agents:
             if agent.active:
                 xlow, ylow, xhigh, yhigh = agent.get_view_exts()

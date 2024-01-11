@@ -67,6 +67,14 @@ def env_from_config(env_config, randomize_seed=True):
     return env_class(**env_kwargs)
 
 
+    # register_marl_env(
+    #     "MarlGrid-DoorKey-16x16-v0",
+    #     DoorKeyEnv,
+    #     entry_point="minigrid.envs:DoorKeyEnv",
+    #     kwargs={"size": 16},
+    # )
+
+
 register_marl_env(
     "MarlGrid-1AgentCluttered15x15-v0",
     ClutteredMultiGrid,

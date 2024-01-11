@@ -68,9 +68,9 @@ class GridAgentInterface(GridAgent):
                 'pov': image_space,
             }
             if self.observe_rewards:
-                obs_space['reward'] = gym.spaces.Box(low=-np.inf, high=np.inf, shape=(), dtype=np.float32)
+                obs_space['reward'] = gym.spaces.Box(low=-np.inf, high=np.inf, shape=(), dtype=np.cfloat32)
             if self.observe_position:
-                obs_space['position'] = gym.spaces.Box(low=0, high=1, shape=(2,), dtype=np.float32)
+                obs_space['position'] = gym.spaces.Box(low=0, high=1, shape=(2,), dtype=np.cfloat32)
             if self.observe_orientation:
                 obs_space['orientation'] = gym.spaces.Discrete(n=4)
             self.observation_space = gym.spaces.Dict(obs_space)
@@ -108,7 +108,7 @@ class GridAgentInterface(GridAgent):
             new_color = (
                     prestige_scaled * blue +
                     (1.-prestige_scaled) * red
-                ).astype(np.int)
+                ).astype(np.int32)
 
             grey_pixels = (np.diff(tile, axis=-1)==0).all(axis=-1)
 
@@ -292,7 +292,7 @@ class GridAgentInterface(GridAgent):
         if not self.see_through_walls:
             return occlude_mask(~opacity_grid, self.get_view_pos())
         else:
-            return np.full(opacity_grid.shape, 1, dtype=np.bool)
+            return np.full(opacity_grid.shape, 1, dtype=np.bool_)
     
 
 @numba.njit

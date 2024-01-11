@@ -12,6 +12,10 @@ class DoorKeyEnv(MultiGridEnv):
     mission = "use the key to open the door and then get to the goal"
     metadata = {}
 
+    def _rand_int(self, low, high):
+        """Return a random integer in the range [low, high)."""
+        return np.random.randint(low, high)
+
     def _gen_grid(self, width, height):
         # Create an empty grid
         self.grid = MultiGrid((width, height))

@@ -3,6 +3,7 @@ from enum import IntEnum
 from gym_minigrid.rendering import (
     fill_coords,
     point_in_rect,
+    point_in_circle,
     point_in_triangle,
     rotate_fn,
 )
