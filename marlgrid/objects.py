@@ -21,15 +21,18 @@ COLORS = {
     "grey": np.array([100, 100, 100]),
     "worst": np.array([74, 65, 42]),  # https://en.wikipedia.org/wiki/Pantone_448_C
     "pink": np.array([255, 0, 189]),
-    "white": np.array([255,255,255]),
-    "prestige": np.array([255,255,255]),
-    "shadow": np.array([35,25,30]), # nice dark purpley color for cells agents can't see.
+    "white": np.array([255, 255, 255]),
+    "prestige": np.array([255, 255, 255]),
+    "shadow": np.array(
+        [35, 25, 30]
+    ),  # nice dark purpley color for cells agents can't see.
 }
 
 # Used to map colors to integers
 COLOR_TO_IDX = dict({v: k for k, v in enumerate(COLORS.keys())})
 
 OBJECT_TYPES = []
+
 
 class RegisteredObjectType(type):
     def __new__(meta, name, bases, class_dict):
@@ -50,8 +53,10 @@ class WorldObj(metaclass=RegisteredObjectType):
         self.state = state
         self.contains = None
 
-        self.agents = [] # Some objects can have agents on top (e.g. floor, open doors, etc).
-        
+        self.agents = (
+            []
+        )  # Some objects can have agents on top (e.g. floor, open doors, etc).
+
         self.pos_init = None
         self.pos = None
         self.is_agent = False
@@ -68,7 +73,7 @@ class WorldObj(metaclass=RegisteredObjectType):
     @property
     def numeric_color(self):
         return COLORS[self.color]
-    
+
     @property
     def type(self):
         return self.__class__.__name__
@@ -89,14 +94,20 @@ class WorldObj(metaclass=RegisteredObjectType):
         return False
 
     def encode(self, str_class=False):
-        # Note 5/29/20: Commented out the condition below; was causing agents to 
+        # Note 5/29/20: Commented out the condition below; was causing agents to
         #  render incorrectly in partial views. In particular, if there were N red agents,
         #  agents {i != k} would render as blue (rather than red) in agent k's partial view.
         # # if len(self.agents)>0:
         # #     return self.agents[0].encode(str_class=str_class)
         # # else:
-        enc_class = self.type if bool(str_class) else self.recursive_subclasses().index(self.__class__)
-        enc_color = self.color if isinstance(self.color, int) else COLOR_TO_IDX[self.color]
+        enc_class = (
+            self.type
+            if bool(str_class)
+            else self.recursive_subclasses().index(self.__class__)
+        )
+        enc_color = (
+            self.color if isinstance(self.color, int) else COLOR_TO_IDX[self.color]
+        )
         return (enc_class, enc_color, self.state)
 
     def describe(self):
@@ -123,10 +134,10 @@ class WorldObj(metaclass=RegisteredObjectType):
 
 
 class GridAgent(WorldObj):
-    def __init__(self, *args, color='red', **kwargs):
-        super().__init__(*args, **{'color':color, **kwargs})
+    def __init__(self, *args, color="red", **kwargs):
+        super().__init__(*args, **{"color": color, **kwargs})
         self.metadata = {
-            'color': color,
+            "color": color,
         }
         self.is_agent = True
 
@@ -136,7 +147,7 @@ class GridAgent(WorldObj):
 
     @property
     def type(self):
-        return 'Agent'
+        return "Agent"
 
     @dir.setter
     def dir(self, dir):
@@ -149,7 +160,11 @@ class GridAgent(WorldObj):
         return True
 
     def render(self, img):
-        tri_fn = point_in_triangle((0.12, 0.19), (0.87, 0.50), (0.12, 0.81),)
+        tri_fn = point_in_triangle(
+            (0.12, 0.19),
+            (0.87, 0.50),
+            (0.12, 0.81),
+        )
         tri_fn = rotate_fn(tri_fn, cx=0.5, cy=0.5, theta=0.5 * np.pi * (self.dir))
         fill_coords(img, tri_fn, COLORS[self.color])
 
@@ -162,9 +177,21 @@ class BulkObj(WorldObj, metaclass=RegisteredObjectType):
     def __eq__(self, other):
         return hash(self) == hash(other)
 
+
 class BonusTile(WorldObj):
-    def __init__(self, reward, penalty=-0.1, bonus_id=0, n_bonus=1, initial_reward=True, reset_on_mistake=False, color='yellow', *args, **kwargs):
-        super().__init__(*args, **{'color': color, **kwargs, 'state': bonus_id})
+    def __init__(
+        self,
+        reward,
+        penalty=-0.1,
+        bonus_id=0,
+        n_bonus=1,
+        initial_reward=True,
+        reset_on_mistake=False,
+        color="yellow",
+        *args,
+        **kwargs,
+    ):
+        super().__init__(*args, **{"color": color, **kwargs, "state": bonus_id})
         self.reward = reward
         self.penalty = penalty
         self.n_bonus = n_bonus
@@ -189,7 +216,7 @@ class BonusTile(WorldObj):
         if agent.bonus_state == self.bonus_id:
             # This is the last bonus tile the agent hit
             rew = -np.abs(self.penalty)
-        elif (agent.bonus_state + 1)%self.n_bonus == self.bonus_id:
+        elif (agent.bonus_state + 1) % self.n_bonus == self.bonus_id:
             # The agent hit the previous bonus tile before this one
             agent.bonus_state = self.bonus_id
             # rew = agent.bonus_value
@@ -208,6 +235,7 @@ class BonusTile(WorldObj):
 
     def render(self, img):
         fill_coords(img, point_in_rect(0, 1, 0, 1), COLORS[self.color])
+
 
 class Goal(WorldObj):
     def __init__(self, reward, *args, **kwargs):
@@ -229,7 +257,7 @@ class Goal(WorldObj):
 
 class Floor(WorldObj):
     def can_overlap(self):
-        return True# and self.agent is None
+        return True  # and self.agent is None
 
     def str_render(self, dir=0):
         return "FF"
@@ -257,7 +285,7 @@ class EmptySpace(WorldObj):
 
 class Lava(WorldObj):
     def can_overlap(self):
-        return True# and self.agent is None
+        return True  # and self.agent is None
 
     def str_render(self, dir=0):
         return "VV"
@@ -326,7 +354,7 @@ class Door(WorldObj):
     states = IntEnum("door_state", "open closed locked")
 
     def can_overlap(self):
-        return self.state == self.states.open# and self.agent is None  # is open
+        return self.state == self.states.open  # and self.agent is None  # is open
 
     def see_behind(self):
         return self.state == self.states.open  # is open

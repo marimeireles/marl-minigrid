@@ -3,12 +3,14 @@ import marlgrid
 from marlgrid.envs import env_from_config
 from marlgrid.envs.cluttered import ClutteredMultiGrid
 
+
 class SimpleAgent:
     def __init__(self, action_space):
         self.action_space = action_space
 
     def select_action(self):
         return self.action_space.sample()
+
 
 # Environment configuration for multiple agents in DoorKeyEnv
 env_config = {
@@ -18,10 +20,22 @@ env_config = {
     "respawn": True,
     "ghost_mode": True,
     "agents": [
-        {"view_size": 7, "view_offset": 1, "view_tile_size": 11, "observation_style": "rich", "color": "red"},
-        {"view_size": 7, "view_offset": 1, "view_tile_size": 11, "observation_style": "rich", "color": "blue"}
+        {
+            "view_size": 7,
+            "view_offset": 1,
+            "view_tile_size": 11,
+            "observation_style": "rich",
+            "color": "red",
+        },
+        {
+            "view_size": 7,
+            "view_offset": 1,
+            "view_tile_size": 11,
+            "observation_style": "rich",
+            "color": "blue",
+        }
         # Add more agent configurations if needed
-    ]
+    ],
 }
 
 env = env_from_config(env_config)
