@@ -51,16 +51,23 @@ player_interface_config = {
     "color": "prestige"
 }
 
+# Add the player/agent config to the environment config (as expected by "env_from_config" below
 env_config['agents'] = [player_interface_config]
+
+# Create the environment based on the combined env/player config
 env = env_from_config(env_config)
+
+# Create a human player interface per the class defined above
 human = HumanPlayer()
 
+# Start an episode!
+# In this case there's only one agent so the list will be of length one.
 obs_list = env.reset()
 human.start_episode()
 done = False
 
 while not done:
-    env.render()
+    env.render() # OPTIONAL: render the whole scene + birds eye view
     player_action = human.action_step(obs_list[0]['pov'])
     agent_actions = [player_action]
     next_obs_list, rew_list, done, _ = env.step(agent_actions)
