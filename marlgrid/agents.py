@@ -19,6 +19,7 @@ class GridAgentInterface(GridAgent):
 
     def __init__(
         self,
+        name,
         view_size=7,
         view_tile_size=5,
         view_offset=0,
@@ -52,6 +53,7 @@ class GridAgentInterface(GridAgent):
         self.prestige_scale = prestige_scale
         self.allow_negative_prestige = allow_negative_prestige
         self.spawn_delay = spawn_delay
+        self.name = name
 
         if self.prestige_beta > 1:
             # warnings.warn("prestige_beta must be between 0 and 1. Using default 0.99")
@@ -71,11 +73,11 @@ class GridAgentInterface(GridAgent):
             }
             if self.observe_rewards:
                 obs_space["reward"] = gym.spaces.Box(
-                    low=-np.inf, high=np.inf, shape=(), dtype=np.cfloat32
+                    low=-np.inf, high=np.inf, shape=(), dtype=np.float32
                 )
             if self.observe_position:
                 obs_space["position"] = gym.spaces.Box(
-                    low=0, high=1, shape=(2,), dtype=np.cfloat32
+                    low=0, high=1, shape=(2,), dtype=np.float32
                 )
             if self.observe_orientation:
                 obs_space["orientation"] = gym.spaces.Discrete(n=4)
@@ -141,6 +143,7 @@ class GridAgentInterface(GridAgent):
             prestige_scale=self.prestige_scale,
             allow_negative_prestige=self.allow_negative_prestige,
             spawn_delay=self.spawn_delay,
+            name=self.name,
             **self.init_kwargs,
         )
         return ret
@@ -158,6 +161,8 @@ class GridAgentInterface(GridAgent):
                 self.prestige += rew
             else:  # rew < 0
                 self.prestige = 0
+        if self.name:
+            print(f"{self.name} rew: {rew}")
 
     def activate(self):
         self.active = True
