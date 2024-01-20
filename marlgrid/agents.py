@@ -19,7 +19,7 @@ class GridAgentInterface(GridAgent):
 
     def __init__(
         self,
-        name,
+        name="",
         view_size=7,
         view_tile_size=5,
         view_offset=0,
