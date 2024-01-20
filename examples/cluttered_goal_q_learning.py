@@ -62,8 +62,8 @@ class QLearningAgent:
 # Example usage
 env_config = {
     "env_class": "ClutteredGoalCycleEnv",
-    "grid_size": 15,
-    "max_steps": 15000,
+    "grid_size": 7,
+    "max_steps": 80000,
     "clutter_density": 0.10,
     "respawn": True,
     "ghost_mode": True,
@@ -93,7 +93,7 @@ while not done:
     for agent in agents:
         agent.exploration_rate = agent.initial_exploration_rate
 
-    env.render(tile_size=32, agent_id=0)
+    env.render()
 
     # Get actions for all agents
     actions = [agents[i].select_action(states[i]) for i in range(len(env.agents))]
