@@ -5,12 +5,16 @@ from ..objects import *
 class DoorKeyEnv(MultiGridEnv):
     """
     Environment with a door and key, sparse reward.
-    Similar to DoorKeyEnv in 
+    Similar to DoorKeyEnv in
         https://github.com/maximecb/gym-minigrid/blob/master/gym_minigrid/envs/doorkey.py
     """
 
     mission = "use the key to open the door and then get to the goal"
     metadata = {}
+
+    def _rand_int(self, low, high):
+        """Return a random integer in the range [low, high)."""
+        return np.random.randint(low, high)
 
     def _gen_grid(self, width, height):
         # Create an empty grid

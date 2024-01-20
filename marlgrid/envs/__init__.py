@@ -41,7 +41,7 @@ def register_marl_env(
                         view_size=view_size,
                         view_tile_size=8,
                         view_offset=view_offset,
-                        )
+                    )
                     for c in colors[:n_agents]
                 ],
                 grid_size=grid_size,
@@ -56,15 +56,26 @@ def register_marl_env(
 
 
 def env_from_config(env_config, randomize_seed=True):
-    possible_envs = {k:v for k,v in globals().items() if inspect.isclass(v) and issubclass(v, MultiGridEnv)}
-    
-    env_class = possible_envs[env_config['env_class']]
-    
-    env_kwargs = {k:v for k,v in env_config.items() if k != 'env_class'}
+    possible_envs = {
+        k: v
+        for k, v in globals().items()
+        if inspect.isclass(v) and issubclass(v, MultiGridEnv)
+    }
+
+    env_class = possible_envs[env_config["env_class"]]
+
+    env_kwargs = {k: v for k, v in env_config.items() if k != "env_class"}
     if randomize_seed:
-        env_kwargs['seed'] = env_kwargs.get('seed', 0) + random.randint(0, 1337*1337)
-    
+        env_kwargs["seed"] = env_kwargs.get("seed", 0) + random.randint(0, 1337 * 1337)
+
     return env_class(**env_kwargs)
+
+    # register_marl_env(
+    #     "MarlGrid-DoorKey-16x16-v0",
+    #     DoorKeyEnv,
+    #     entry_point="minigrid.envs:DoorKeyEnv",
+    #     kwargs={"size": 16},
+    # )
 
 
 register_marl_env(
@@ -73,7 +84,7 @@ register_marl_env(
     n_agents=1,
     grid_size=11,
     view_size=5,
-    env_kwargs={'n_clutter':30}
+    env_kwargs={"n_clutter": 30},
 )
 
 register_marl_env(
@@ -82,7 +93,7 @@ register_marl_env(
     n_agents=3,
     grid_size=11,
     view_size=7,
-    env_kwargs={'clutter_density':0.15}
+    env_kwargs={"clutter_density": 0.15},
 )
 
 register_marl_env(
@@ -91,7 +102,7 @@ register_marl_env(
     n_agents=3,
     grid_size=15,
     view_size=7,
-    env_kwargs={'clutter_density':0.15}
+    env_kwargs={"clutter_density": 0.15},
 )
 
 register_marl_env(
@@ -107,15 +118,12 @@ register_marl_env(
 )
 
 register_marl_env(
-    "Goalcycle-demo-solo-v0", 
-    ClutteredGoalCycleEnv, 
-    n_agents=1, 
+    "Goalcycle-demo-solo-v0",
+    ClutteredGoalCycleEnv,
+    n_agents=1,
     grid_size=13,
     view_size=7,
     view_tile_size=5,
     view_offset=1,
-    env_kwargs={
-        'clutter_density':0.1,
-        'n_bonus_tiles': 3
-    }
+    env_kwargs={"clutter_density": 0.1, "n_bonus_tiles": 3},
 )
