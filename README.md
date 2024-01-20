@@ -63,3 +63,9 @@ for i_episode in range(N_episodes):
             episode_over = all(done) # or any(done)
             
 ```
+
+### Build docs locally
+
+* `mkdocs serve` - Start the live-reloading docs server.
+* `mkdocs build` - Build the documentation site.
+* `mkdocs -h` - Print help message and exit.
