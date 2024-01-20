@@ -2,9 +2,17 @@ import numpy as np
 import gym
 from marlgrid.envs import env_from_config
 
+
 class QLearningAgent:
-    def __init__(self, action_space_n, learning_rate=0.1, discount_factor=0.95, exploration_rate=1.0, exploration_decay_rate=0.995):
-    # def __init__(self, action_space_n, learning_rate=0.01, discount_factor=0.95, exploration_rate=0.5, exploration_decay_rate=0.995):
+    def __init__(
+        self,
+        action_space_n,
+        learning_rate=0.1,
+        discount_factor=0.95,
+        exploration_rate=1.0,
+        exploration_decay_rate=0.995,
+    ):
+        # def __init__(self, action_space_n, learning_rate=0.01, discount_factor=0.95, exploration_rate=0.5, exploration_decay_rate=0.995):
         self.action_space_n = action_space_n
         self.learning_rate = learning_rate
         self.discount_factor = discount_factor
@@ -48,16 +56,21 @@ class QLearningAgent:
             self.q_table[state_key] = {a: 0 for a in range(self.action_space_n)}
 
         # Calculate the maximum future reward
-        max_future_reward = max(self.q_table.get(next_state_key, {}).values(), default=0)
+        max_future_reward = max(
+            self.q_table.get(next_state_key, {}).values(), default=0
+        )
 
         # Update the Q-value for the state-action pair
         current_q_value = self.q_table[state_key][action]
-        new_q_value = current_q_value + self.learning_rate * (reward + self.discount_factor * max_future_reward - current_q_value)
+        new_q_value = current_q_value + self.learning_rate * (
+            reward + self.discount_factor * max_future_reward - current_q_value
+        )
         self.q_table[state_key][action] = new_q_value
 
     def update_exploration_rate(self):
         # Decay the exploration rate over time
         self.exploration_rate *= self.exploration_decay_rate
+
 
 # Example usage
 env_config = {
@@ -72,23 +85,37 @@ env_config = {
     "initial_reward": True,
     "penalty": -1.5,
     "agents": [
-        {"view_size": 7, "view_offset": 1, "view_tile_size": 11, "observation_style": "rich", "color": "red"},
-        {"view_size": 7, "view_offset": 1, "view_tile_size": 11, "observation_style": "rich", "color": "blue"}
+        {
+            "view_size": 7,
+            "view_offset": 1,
+            "view_tile_size": 11,
+            "observation_style": "rich",
+            "color": "red",
+        },
+        {
+            "view_size": 7,
+            "view_offset": 1,
+            "view_tile_size": 11,
+            "observation_style": "rich",
+            "color": "blue",
+        }
         # Add more agent configurations if needed
-    ]
+    ],
 }
 # Initialize the environment
 env = env_from_config(env_config)
 
 # Create a QLearningAgent for each agent in the environment
-agents = [QLearningAgent(action_space_n=env.action_space.spaces[i].n) for i in range(len(env.agents))]
+agents = [
+    QLearningAgent(action_space_n=env.action_space.spaces[i].n)
+    for i in range(len(env.agents))
+]
 
 # Start an episode
 states = env.reset()
 done = False
 
 while not done:
-
     # Reset exploration rate at the beginning of each episode
     for agent in agents:
         agent.exploration_rate = agent.initial_exploration_rate
@@ -111,4 +138,3 @@ while not done:
 
 # Episode finished
 print("Episode finished")
-

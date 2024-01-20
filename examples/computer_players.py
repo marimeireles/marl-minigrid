@@ -2,6 +2,7 @@ import numpy as np
 import marlgrid
 from marlgrid.envs import env_from_config
 
+
 class SimpleAgent:
     def __init__(self, action_space):
         self.action_space = action_space
@@ -10,6 +11,7 @@ class SimpleAgent:
     # by default they're random
     def select_action(self):
         return self.action_space.sample()
+
 
 # Environment configuration for multiple agents
 env_config = {
@@ -24,10 +26,26 @@ env_config = {
     "initial_reward": True,
     "penalty": -1.5,
     "agents": [
-        {"view_size": 7, "view_offset": 1, "view_tile_size": 5, "observe_rewards": True, "observation_style": "rich", "color": "red", "name":"morgan"},
-        {"view_size": 7, "view_offset": 1, "view_tile_size": 15, "observe_rewards": True, "observation_style": "rich", "color": "blue", "name": "josephina_sus"}
+        {
+            "view_size": 7,
+            "view_offset": 1,
+            "view_tile_size": 5,
+            "observe_rewards": True,
+            "observation_style": "rich",
+            "color": "red",
+            "name": "morgan",
+        },
+        {
+            "view_size": 7,
+            "view_offset": 1,
+            "view_tile_size": 15,
+            "observe_rewards": True,
+            "observation_style": "rich",
+            "color": "blue",
+            "name": "josephina_sus",
+        }
         # Add more agent configurations if needed
-    ]
+    ],
 }
 
 env = env_from_config(env_config)
@@ -59,7 +77,6 @@ env = env_from_config(env_config)
 # Observe ClutteredGoalCycleEnv:
 # The goal here is to cycle through the yellow blocks, the agents kinda learn it fast
 # around 1000 iterations and they already understand what they should be doing (depending on the random grid)
-
 
 
 # EX: adding agents to an environment
