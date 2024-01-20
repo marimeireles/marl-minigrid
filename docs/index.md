@@ -1,5 +1,8 @@
-site_name: MARL minigrid
-nav:
-    - Home: index.md
-    - Environment: env.md
-    - Agents: agents.md
+## Index
+
+- [Environment](env.md)
+- [Agent](agents.md)
+
+## License
+
+- [Apache License 2.0](https://github.com/marimeireles/marl-minigrid/blob/master/LICENSE)
